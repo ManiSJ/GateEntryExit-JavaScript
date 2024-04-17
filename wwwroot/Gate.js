@@ -8,6 +8,7 @@ gate_getAllApiUrl = baseUrl + '/api/gate/getAll';
 gate_getAllByIdApiUrl = baseUrl + '/api/gate/getAllById';
 
 $(document).ready(function () {
+    resetGateForm();
     getAllGate();
 })
 
@@ -48,7 +49,6 @@ function populateGates(records) {
                     .html("<button class='gate-edit btn btn-primary' data-id='" + record.id + "'>Edit</button>" +
                         "<button class='gate-delete mx-2 btn btn-danger'data-id='" + record.id + "'>Delete</button>"))
                 .append($("<td>").text(record.name));
-            // Add more table cells as needed
             tableBody.append(row);
     });
     
@@ -102,7 +102,7 @@ function createGate(name){
         contentType: "application/json;charset=utf-8", 
         data: JSON.stringify({ Name : name}),
         success: function (res) {
-            resetForm();
+            resetGateForm();
             getAllGate();
         },
         error: function (xhr, textStatus, error) {
@@ -120,7 +120,8 @@ function getGate(id) {
         url: gate_getByIdApiUrl + '/' + id, 
         dataType: "json",
         success: function (res) {
-            resetForm();
+            $("#gateId").val(res.id);
+            $("#gateName").val(res.name);           
         },
         error: function (xhr, textStatus, error) {
             console.log("Xhr status code:", xhr.status);
@@ -139,8 +140,7 @@ function editGate(id, name) {
         contentType: "application/json;charset=utf-8", 
         data: JSON.stringify({ Id : id, Name : name}),
         success: function (res) {
-            $("#gateId").val('');
-            $("#gateName").val('');
+            resetGateForm();
             getAllGate();
         },
         error: function (xhr, textStatus, error) {
@@ -168,7 +168,7 @@ function deleteGate(id) {
     })
 }
 
-function resetForm() {
-    $("#gateId").val(res.id);
-    $("#gateName").val(res.name);
+function resetGateForm() {
+    $("#gateId").val('');
+    $("#gateName").val('');
 }

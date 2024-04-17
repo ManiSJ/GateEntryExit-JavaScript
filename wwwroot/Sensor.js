@@ -5,12 +5,9 @@ sensor_updateApiUrl = baseUrl + '/api/sensor/edit';
 sensor_deleteApiUrl = baseUrl + '/api/sensor/delete';
 sensor_getByIdApiUrl = baseUrl + '/api/sensor/getById';
 sensor_getAllApiUrl = baseUrl + '/api/sensor/getAll';
-sensor_getAllWithDetailsApiUrl = baseUrl + '/api/sensor/getAllWithDetails';
-sensor_getAllWithDetailsApiUrlExcelReport = baseUrl + '/api/sensor/getAllWithDetailsExcelReport';
-sensor_getAllWithDetailsApiUrlPdfReport = baseUrl + '/api/sensor/getAllWithDetailsPdfReport';
-sensor_getAllGateApiUrl = baseUrl + '/api/gate/getAll';
 
 $(document).ready(function () {
+    resetSensorForm();
     getAllSensor();
 })
 
@@ -52,7 +49,6 @@ function populateSensors(records) {
                     "<button class='sensor-delete mx-2 btn btn-danger'data-id='" + record.id + "'>Delete</button>"))
             .append($("<td>").text(record.name))
             .append($("<td>").text(record.gateDetails.name));
-        // Add more table cells as needed
         tableBody.append(row);
     });
 
@@ -173,84 +169,6 @@ function deleteSensor(id) {
             console.log("Error:", error);
         }
     })
-}
-
-function getAllModalGate(callback, pageNumber = 1) {
-    var maxResultCount = 5;
-    var skipCount = (pageNumber - 1) * maxResultCount;
-    $.ajax({
-        type: "POST",
-        url: sensor_getAllGateApiUrl,
-        contentType: "application/json;charset=utf-8",
-        data: JSON.stringify({
-            MaxResultCount: maxResultCount,
-            SkipCount: skipCount,
-            Sorting: ''
-        }),
-        dataType: "json",
-        success: function (records) {
-            populateGatesInModal(records);
-        },
-        error: function (xhr, textStatus, error) {
-            console.log("Xhr status code:", xhr.status);
-            console.log("Xhr status text:", xhr.statusText);
-            console.log("Text status:", textStatus);
-            console.log("Error:", error);
-        }
-    })
-}
-
-
-function populateGatesInModal(records) {
-    var modalBody = $("#gate-modal .modal-body");
-    var gates = '';
-    var selectedGateId = $("#sensorGateId").val();
-    $.each(records.items, function (index, record) {
-        var rowHtml = `<tr><td>
-                    <input type='radio' name='gate' class='form-check-input' ` + (selectedGateId == record.id ? 'checked' : '') + ` onclick='gateSingleSelection(` + JSON.stringify(record) + `)' />
-                </td>
-                <td>` + record.name + `</td></tr>`;
-        gates += rowHtml;
-    });
-
-    var modalPagination = '';
-    var pageSize = 5;
-    var totalPages = Math.ceil(records.totalCount / pageSize);
-
-    for (let i = 1; i <= totalPages; i++) {
-        var pageItem = `<li class='page-item'><a class='page-link' data-pagenumber='` + i + `'>` + i + `</a></li>`;
-        modalPagination += pageItem;
-    }
-
-    modalBody.html(`<table class='table table-striped'>
-        <thead>
-        <tr>
-        <th>Action</th>
-        <th>Name</th>
-        </tr>
-        </thead>
-        <tbody>` + gates +
-        `</tbody></table>
-        <nav class="float-end">
-        <ul id="sensorsPagination" class="pagination">` + modalPagination +
-        `</ul>
-        </nav>`);
-
-    $("#gate-modal .modal-body .page-link").click(function () {
-        var pageNumber = $(this).data("pagenumber");
-        getAllModalGate(populateGatesInModal, pageNumber);
-    })
-}
-
-function openGateModal() {
-    $("#gate-modal").modal('show');
-    getAllModalGate(populateGatesInModal)
-}
-
-function gateSingleSelection(record) {
-    $("#sensorGateId").val(record.id);
-    $("#sensorGateName").val(record.name);
-    $("#gate-modal").modal('hide');
 }
 
 function resetSensorForm() {
