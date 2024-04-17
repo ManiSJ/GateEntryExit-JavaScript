@@ -3,7 +3,7 @@ var baseUrl = 'http://localhost:5058';
 var createApiUrl = baseUrl + '/api/gate/create';
 var updateApiUrl = baseUrl + '/api/gate/edit';
 var deleteApiUrl = baseUrl + '/api/gate/delete';
-var getApiUrl = '';
+var getByIdApiUrl = baseUrl + '/api/gate/getById';
 var getAllApiUrl = baseUrl + '/api/gate/getAll';
 var getAllByIdApiUrl = baseUrl + '/api/gate/getAllById';
 
@@ -45,19 +45,19 @@ function populateGates(records) {
     $.each(records.items, function (index, record) {
             var row = $("<tr>")
                 .append($("<td>")
-                    .html("<button id='gate-edit' class='btn btn-primary' data-id='" + record.id + "'>Edit</button>" +
-                        "<button id='gate-delete'class='mx-2 btn btn-danger' data-id='" + record.id + "'>Delete</button>"))
+                    .html("<button class='gate-edit btn btn-primary' data-id='" + record.id + "'>Edit</button>" +
+                        "<button class='gate-delete mx-2 btn btn-danger'data-id='" + record.id + "'>Delete</button>"))
                 .append($("<td>").text(record.name));
             // Add more table cells as needed
             tableBody.append(row);
     });
     
-    $("#gate-edit").click(function () {
+    $(".gate-edit").click(function () {
         var id = $(this).data("id");
-        editGate(id);
+        getGate(id);
     });
 
-    $("#gate-delete").click(function () {
+    $(".gate-delete").click(function () {
         var id = $(this).data("id");
         deleteGate(id);
     });
@@ -79,14 +79,19 @@ function populateGatesPagination(records) {
     }
 
     $("#gatesPagination .page-link").click(function () {
-        console.log('pageNumber', $(this).text());
         getAllGates($(this).text());
     })
 }
 
 function submitGateForm() {
-    var name = $("gateName").val();
-    createGate(name);
+    var id = $("#gateId").val();
+    var name = $("#gateName").val();
+    if (gateId) {
+        editGate(id, name);
+    }
+    else {
+        createGate(name);
+    }
 }
 
 function createGate(name){
@@ -95,9 +100,10 @@ function createGate(name){
         url: createApiUrl,
         dataType: "json",
         contentType: "application/json;charset=utf-8", 
-        data: JSON.stringify({ Name : name, }),
+        data: JSON.stringify({ Name : name}),
         success: function (res) {
-
+            $("#gateName").val('');
+            getAllGates();
         },
         error: function (xhr, textStatus, error) {
             console.log("Xhr status code:", xhr.status);
@@ -108,15 +114,35 @@ function createGate(name){
     })
 }
 
-function editGate(id) {
+function getGate(id) {
+    $.ajax({
+        type: "POST",
+        url: getByIdApiUrl + '/' + id, 
+        dataType: "json",
+        success: function (res) {
+            $("#gateId").val(res.id);
+            $("#gateName").val(res.name);
+        },
+        error: function (xhr, textStatus, error) {
+            console.log("Xhr status code:", xhr.status);
+            console.log("Xhr status text:", xhr.statusText);
+            console.log("Text status:", textStatus);
+            console.log("Error:", error);
+        }
+    })
+}
+
+function editGate(id, name) {
     $.ajax({
         type: "POST",
         url: updateApiUrl,
         dataType: "json",
-        contentType: "application/json;charset=utf-8", // Specify the content type as JSON
-        data: JSON.stringify({ Id : id, }),
+        contentType: "application/json;charset=utf-8", 
+        data: JSON.stringify({ Id : id, Name : name}),
         success: function (res) {
-            
+            $("#gateId").val('');
+            $("#gateName").val('');
+            getAllGates();
         },
         error: function (xhr, textStatus, error) {
             console.log("Xhr status code:", xhr.status);
@@ -132,7 +158,7 @@ function deleteGate(id) {
         type: "DELETE",
         url: deleteApiUrl + '/' + id,
         success: function (res) {
-
+            getAllGates();
         },
         error: function (xhr, textStatus, error) {
             console.log("Xhr status code:", xhr.status);
