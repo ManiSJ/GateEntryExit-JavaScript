@@ -12,6 +12,14 @@ $(document).ready(function () {
 function getAllSensorWithDetails(pageNumber = 1) {
     var maxResultCount = 5;
     var skipCount = (pageNumber - 1) * maxResultCount;
+    var selectedGateIds = [];
+    var selectedGateIdValues = $("#selectedGateIds").val();
+
+    if (selectedGateIdValues != "") {
+        selectedGateIds = selectedGateIdValues.split(',')
+    }
+
+    console.log('getAllSensorWithDetails-GateIds', selectedGateIdValues);
     $.ajax({
         type: "POST",
         url: sensor_getAllWithDetailsApiUrl,
@@ -20,7 +28,7 @@ function getAllSensorWithDetails(pageNumber = 1) {
             MaxResultCount: maxResultCount,
             SkipCount: skipCount,
             Sorting: '',
-            GateIds: [],
+            GateIds: selectedGateIds,
             FromDate: null,
             ToDate: null
         }),
@@ -74,9 +82,6 @@ function populateSensorWithDetailsPagination(records) {
 }
 
 function resetSensorWithDetailsForm() {
-
-}
-
-function filter() {
-
+    $("#selectedGateIds").val([]);
+    $("#selectedGateNames").val([]);
 }

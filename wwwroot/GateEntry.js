@@ -3,7 +3,7 @@ baseUrl = 'http://localhost:5058';
 gateEntry_createApiUrl = baseUrl + '/api/gateEntry/create';
 gateEntry_updateApiUrl = baseUrl + '/api/gateEntry/edit';
 gateEntry_deleteApiUrl = baseUrl + '/api/gateEntry/delete';
-gateEntry_getApiUrl = '';
+gateEntry_getByIdApiUrl = baseUrl + '/api/gateEntry/getById';
 gateEntry_getAllApiUrl = baseUrl + '/api/gateEntry/getAll';
 
 $(document).ready(function () {
@@ -55,12 +55,12 @@ function populateGateEntries(records) {
 
     $(".gateEntry-edit").click(function () {
         var id = $(this).data("id");
-        getGate(id);
+        getGateEntry(id);
     });
 
     $(".gateEntry-delete").click(function () {
         var id = $(this).data("id");
-        deleteGate(id);
+        deleteGateEntry(id);
     });
 }
 
@@ -85,17 +85,22 @@ function populateGateEntriesPagination(records) {
 }
 
 function submitGateEntryForm() {
-    var id = $("#entryGateId").val();
-    var name = $("#entryGateName").val();
+    var id = $("#entryId").val();
+    var date = $("#entryDate").val();
+    var hour = $("#entryHour").val();
+    var minute = $("#entryMinute").val();
+    var numberOfPeople = $("#entryNumberOfPeople").val();
+    var gateId = $("#entryGateId").val();
+    var timeStamp = date + 'T' + hour + ':' + minute + ':00';
     if (id) {
-        editGateEntry(id, name);
+        editGateEntry(id, numberOfPeople, timeStamp);
     }
     else {
-        createGateEntry(name);
+        createGateEntry(gateId, numberOfPeople, timeStamp);
     }
 }
 
-function createGateEntry(name) {
+function createGateEntry(gateId, numberOfPeople, timeStamp) {
     $.ajax({
         type: "POST",
         url: gateEntry_createApiUrl,
@@ -121,7 +126,15 @@ function getGateEntry(id) {
         url: gateEntry_getByIdApiUrl + '/' + id,
         dataType: "json",
         success: function (res) {
-            
+            $("#entryId").val(res.id);
+            var dateComponents = res.timeStamp.split('T')[0];
+            var timeComponents = res.timeStamp.split('T')[1].split(':');
+            $("#entryDate").val(dateComponents);
+            $("#entryHour").val(timeComponents[0]);
+            $("#entryMinute").val(timeComponents[1]);
+            $("#entryNumberOfPeople").val(res.numberOfPeople);
+            $("#entryGateId").val(res.gateId);
+            $("#entryGateName").val(res.gateName);
         },
         error: function (xhr, textStatus, error) {
             console.log("Xhr status code:", xhr.status);
@@ -132,7 +145,7 @@ function getGateEntry(id) {
     })
 }
 
-function editGateEntry(id, name) {
+function editGateEntry(id, numberOfPeople, timeStamp) {
     $.ajax({
         type: "POST",
         url: gateEntry_updateApiUrl,
@@ -169,6 +182,11 @@ function deleteGateEntry(id) {
 }
 
 function resetGateEntryForm() {
+    $("#entryId").val('');
+    $("#entryDate").val('');
+    $("#entryHour").val('');
+    $("#entryMinute").val('');
+    $("#entryNumberOfPeople").val('');
     $("#entryGateId").val('');
     $("#entryGateName").val('');
 }

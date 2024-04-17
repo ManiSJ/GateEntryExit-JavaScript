@@ -79,11 +79,13 @@
                 <form id="gateEntryForm">
                     <div class="row">
                         <div class="col-5">
-                            <input type="date" name="entryDate" id="entryDate" class="form-control" />
-                            <input type="number" min="00" max="24" name="entryHour" id="entryHour" class="form-control" placeholder="Hour" />
-                            <input type="number" min="00" max="60" name="entryMinute" id="entryMinute" class="form-control" placeholder="Minute"/>
+                            <input type="hidden" class="form-control" name="entryId" id="entryId" />
+                            <input type="date" name="entryDate" id="entryDate" class="mb-3 form-control" />
+                            <input type="number" min="00" max="24" name="entryHour" id="entryHour" class="mb-3 form-control" placeholder="Hour" />
+                            <input type="number" min="00" max="60" name="entryMinute" id="entryMinute" class="form-control" placeholder="Minute" />
                         </div>
                         <div class="col-5">
+                            <input type="number" name="entryNumberOfPeople" id="entryNumberOfPeople" class="mb-3 form-control" placeholder="No. of people" />
                             <div class="input-group">
                                 <input type="hidden" class="form-control" name="entryGateId" id="entryGateId" />
                                 <input type="text" disabled name="entryGateName" id="entryGateName" class="form-control" />
@@ -116,11 +118,13 @@
                 <form id="gateExitForm">
                     <div class="row">
                         <div class="col-5">
-                            <input type="date" name="exitDate" id="exitDate" class="form-control" />
-                            <input type="number" min="00" max="24" name="exitHour" id="exitHour" class="form-control" placeholder="Hour" />
+                            <input type="hidden" class="form-control" name="exitId" id="exitId" />
+                            <input type="date" name="exitDate" id="exitDate" class="mb-3 form-control" />
+                            <input type="number" min="00" max="24" name="exitHour" id="exitHour" class="mb-3 form-control" placeholder="Hour" />
                             <input type="number" min="00" max="60" name="exitMinute" id="exitMinute" class="form-control" placeholder="Minute" />
                         </div>
                         <div class="col-5">
+                            <input type="number" name="exitNumberOfPeople" id="exitNumberOfPeople" class="mb-3 form-control" placeholder="No. of people" />
                             <div class="input-group">
                                 <input type="hidden" class="form-control" name="exitGateId" id="exitGateId" />
                                 <input type="text" disabled name="exitGateName" id="exitGateName" class="form-control" />
@@ -156,9 +160,9 @@
                 <form id="sensorWithDetailsForm">
                     <input type="hidden" name="selectedGateIds" id="selectedGateIds" />
                     <button type="button" class="btn btn-primary" onclick="openGateModal(false, false, false, false)">Gates</button>
-                    <button type="button" class="btn btn-primary" onclick="">Filter</button>
+                    <button type="button" class="btn btn-primary" onclick="getAllSensorWithDetails(1)">Filter</button>
                 </form>
-                <div id="selectedGateNames"></div>
+                <div class="mt-3 mb-3" id="selectedGateNames"></div>
                 <table id="sensorWithDetials" class="table table-striped">
                     <thead>
                         <tr>

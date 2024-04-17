@@ -3,7 +3,7 @@ baseUrl = 'http://localhost:5058';
 gateExit_createApiUrl = baseUrl + '/api/gateExit/create';
 gateExit_updateApiUrl = baseUrl + '/api/gateExit/edit';
 gateExit_deleteApiUrl = baseUrl + '/api/gateExit/delete';
-gateExit_getApiUrl = '';
+gateExit_getByIdApiUrl = baseUrl + '/api/gateExit/getById';
 gateExit_getAllApiUrl = baseUrl + '/api/gateExit/getAll';
 
 $(document).ready(function () {
@@ -84,17 +84,22 @@ function populateGateExitsPagination(records) {
 }
 
 function submitGateExitForm() {
-    var id = $("#exitGateId").val();
-    var name = $("#exitGateName").val();
+    var id = $("#exitId").val();
+    var date = $("#exitDate").val();
+    var hour = $("#exitHour").val();
+    var minute = $("#exitMinute").val();
+    var numberOfPeople = $("#exitNumberOfPeople").val();
+    var gateId = $("#exitGateId").val();
+    var timeStamp = date + 'T' + hour + ':' + minute + ':00';
     if (id) {
-        editGateExit(id, name);
+        editGateExit(id, numberOfPeople, timeStamp);
     }
     else {
-        createGateExit(name);
+        createGateExit(gateId, numberOfPeople, timeStamp);
     }
 }
 
-function createGateExit(name) {
+function createGateExit(gateId, numberOfPeople, timeStamp) {
     $.ajax({
         type: "POST",
         url: gateExit_createApiUrl,
@@ -120,7 +125,15 @@ function getGateExit(id) {
         url: gateExit_getByIdApiUrl + '/' + id,
         dataType: "json",
         success: function (res) {
-
+            $("#exitId").val(res.id);
+            var dateComponents = res.timeStamp.split('T')[0];
+            var timeComponents = res.timeStamp.split('T')[1].split(':');
+            $("#exitDate").val(dateComponents);
+            $("#exitHour").val(timeComponents[0]);
+            $("#exitMinute").val(timeComponents[1]);
+            $("#exitNumberOfPeople").val(res.numberOfPeople);
+            $("#exitGateId").val(res.gateId);
+            $("#exitGateName").val(res.gateName);
         },
         error: function (xhr, textStatus, error) {
             console.log("Xhr status code:", xhr.status);
@@ -131,7 +144,7 @@ function getGateExit(id) {
     })
 }
 
-function editGateExit(id, name) {
+function editGateExit(id, numberOfPeople, timeStamp) {
     $.ajax({
         type: "POST",
         url: gateExit_updateApiUrl,
@@ -168,6 +181,11 @@ function deleteGateExit(id) {
 }
 
 function resetGateExitForm() {
+    $("#exitId").val('');
+    $("#exitDate").val('');
+    $("#exitHour").val('');
+    $("#exitMinute").val('');
+    $("#exitNumberOfPeople").val('');
     $("#exitGateId").val('');
     $("#exitGateName").val('');
 }

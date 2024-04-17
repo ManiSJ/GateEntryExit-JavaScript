@@ -4,6 +4,7 @@ baseUrl = 'http://localhost:5058';
 sensor_getAllGateApiUrl = baseUrl + '/api/gate/getAll';
 
 selectedGateIds = [];
+selectedGateNames = [];
 
 function getAllModalGate(isSingleSelect, forSensor, forGateEntry, forGateExit, pageNumber = 1) {
     var maxResultCount = 5;
@@ -65,7 +66,7 @@ function populateGatesInModal(isSingleSelect, forSensor, forGateEntry, forGateEx
         else {
             var isChecked = selectedGateIdsArray.includes(record.id);
             var rowHtml = `<tr><td>
-                    <input type='checkbox' name='gate' class='form-check-input' ` + (isChecked ? 'checked' : '') + ` onclick='gateMultipleSelection(` + JSON.stringify(record) + `)' />
+                    <input type='checkbox' name='gate' class='form-check-input' ` + (isChecked ? 'checked' : '') + ` onclick='gateMultipleSelection(event, `  + JSON.stringify(record) + `)' />
                 </td>
                 <td>` + record.name + `</td></tr>`;
             gates += rowHtml;
@@ -103,6 +104,9 @@ function populateGatesInModal(isSingleSelect, forSensor, forGateEntry, forGateEx
 
 function openGateModal(isSingleSelect, forSensor, forGateEntry, forGateExit) {
     selectedGateIds = [];
+    selectedGateNames = [];
+    $("#selectedGateIds").val(selectedGateIds);
+    $("#selectedGateNames").val(selectedGateNames);
     $("#gate-modal").modal('show');
     getAllModalGate(isSingleSelect, forSensor, forGateEntry, forGateExit)
 }
@@ -123,7 +127,17 @@ function gateSingleSelection(forSensor, forGateEntry, forGateExit, record) {
     $("#gate-modal").modal('hide');
 }
 
-function gateMultipleSelection(record) {
-    selectedGateIds.push(record.id);
-    $("#selectedGateIds").val(selectedGateIds);
+function gateMultipleSelection(event, record) {
+    if (event.target.checked == true) {
+        selectedGateIds.push(record.id);
+        selectedGateNames.push(record.name);
+        $("#selectedGateIds").val(selectedGateIds);
+        $("#selectedGateNames").html(`<p>Selected gate names - ` + selectedGateNames.join(', ') + `</p>`);
+    }
+    else {
+        selectedGateIds.pop(record.id);
+        selectedGateNames.pop(record.name);
+        $("#selectedGateIds").val(selectedGateIds);
+        $("#selectedGateNames").html(`<p>Selected gate names - ` + selectedGateNames.join(', ') + `</p>`);
+    }
 }
