@@ -1,22 +1,22 @@
-var baseUrl = 'http://localhost:5058';
+baseUrl = 'http://localhost:5058';
 
-var createApiUrl = baseUrl + '/api/gate/create';
-var updateApiUrl = baseUrl + '/api/gate/edit';
-var deleteApiUrl = baseUrl + '/api/gate/delete';
-var getByIdApiUrl = baseUrl + '/api/gate/getById';
-var getAllApiUrl = baseUrl + '/api/gate/getAll';
-var getAllByIdApiUrl = baseUrl + '/api/gate/getAllById';
+gate_createApiUrl = baseUrl + '/api/gate/create';
+gate_updateApiUrl = baseUrl + '/api/gate/edit';
+gate_deleteApiUrl = baseUrl + '/api/gate/delete';
+gate_getByIdApiUrl = baseUrl + '/api/gate/getById';
+gate_getAllApiUrl = baseUrl + '/api/gate/getAll';
+gate_getAllByIdApiUrl = baseUrl + '/api/gate/getAllById';
 
 $(document).ready(function () {
-    getAllGates();
+    getAllGate();
 })
 
-function getAllGates(pageNumber = 1) {
+function getAllGate(pageNumber = 1) {
     var maxResultCount = 5;
     var skipCount = (pageNumber - 1) * maxResultCount;
     $.ajax({
         type: "POST",
-        url: getAllApiUrl,
+        url: gate_getAllApiUrl,
         contentType: "application/json;charset=utf-8",
         data: JSON.stringify({
             MaxResultCount: maxResultCount,
@@ -79,14 +79,14 @@ function populateGatesPagination(records) {
     }
 
     $("#gatesPagination .page-link").click(function () {
-        getAllGates($(this).text());
+        getAllGate($(this).text());
     })
 }
 
 function submitGateForm() {
     var id = $("#gateId").val();
     var name = $("#gateName").val();
-    if (gateId) {
+    if (id) {
         editGate(id, name);
     }
     else {
@@ -97,13 +97,13 @@ function submitGateForm() {
 function createGate(name){
     $.ajax({
         type: "POST",
-        url: createApiUrl,
+        url: gate_createApiUrl,
         dataType: "json",
         contentType: "application/json;charset=utf-8", 
         data: JSON.stringify({ Name : name}),
         success: function (res) {
-            $("#gateName").val('');
-            getAllGates();
+            resetForm();
+            getAllGate();
         },
         error: function (xhr, textStatus, error) {
             console.log("Xhr status code:", xhr.status);
@@ -117,11 +117,10 @@ function createGate(name){
 function getGate(id) {
     $.ajax({
         type: "POST",
-        url: getByIdApiUrl + '/' + id, 
+        url: gate_getByIdApiUrl + '/' + id, 
         dataType: "json",
         success: function (res) {
-            $("#gateId").val(res.id);
-            $("#gateName").val(res.name);
+            resetForm();
         },
         error: function (xhr, textStatus, error) {
             console.log("Xhr status code:", xhr.status);
@@ -135,14 +134,14 @@ function getGate(id) {
 function editGate(id, name) {
     $.ajax({
         type: "POST",
-        url: updateApiUrl,
+        url: gate_updateApiUrl,
         dataType: "json",
         contentType: "application/json;charset=utf-8", 
         data: JSON.stringify({ Id : id, Name : name}),
         success: function (res) {
             $("#gateId").val('');
             $("#gateName").val('');
-            getAllGates();
+            getAllGate();
         },
         error: function (xhr, textStatus, error) {
             console.log("Xhr status code:", xhr.status);
@@ -156,9 +155,9 @@ function editGate(id, name) {
 function deleteGate(id) {
     $.ajax({
         type: "DELETE",
-        url: deleteApiUrl + '/' + id,
+        url: gate_deleteApiUrl + '/' + id,
         success: function (res) {
-            getAllGates();
+            getAllGate();
         },
         error: function (xhr, textStatus, error) {
             console.log("Xhr status code:", xhr.status);
@@ -167,4 +166,9 @@ function deleteGate(id) {
             console.log("Error:", error);
         }
     })
+}
+
+function resetForm() {
+    $("#gateId").val(res.id);
+    $("#gateName").val(res.name);
 }
